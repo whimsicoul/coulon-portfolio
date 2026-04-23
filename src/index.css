@@ -1,0 +1,132 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Cinzel:wght@400;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 230 15% 6%;
+    --foreground: 210 20% 92%;
+
+    --card: 230 12% 10%;
+    --card-foreground: 210 20% 92%;
+
+    --popover: 230 12% 10%;
+    --popover-foreground: 210 20% 92%;
+
+    --primary: 200 100% 60%;
+    --primary-foreground: 230 15% 6%;
+
+    --secondary: 230 12% 14%;
+    --secondary-foreground: 210 20% 85%;
+
+    --muted: 230 10% 16%;
+    --muted-foreground: 215 15% 55%;
+
+    --accent: 260 80% 65%;
+    --accent-foreground: 210 20% 95%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 230 12% 18%;
+    --input: 230 12% 18%;
+    --ring: 200 100% 60%;
+
+    --radius: 0.75rem;
+
+    --glow-primary: 200 100% 60%;
+    --glow-accent: 260 80% 65%;
+    --surface-glass: 230 15% 12%;
+
+    --sidebar-background: 230 15% 8%;
+    --sidebar-foreground: 210 20% 85%;
+    --sidebar-primary: 200 100% 60%;
+    --sidebar-primary-foreground: 230 15% 6%;
+    --sidebar-accent: 230 12% 14%;
+    --sidebar-accent-foreground: 210 20% 85%;
+    --sidebar-border: 230 12% 18%;
+    --sidebar-ring: 200 100% 60%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-body antialiased;
+    overflow-x: hidden;
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: 'Space Grotesk', sans-serif;
+  }
+
+  .font-body {
+    font-family: 'Space Grotesk', sans-serif;
+  }
+
+  .font-mono {
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .glow-primary {
+    box-shadow: 0 0 20px hsl(var(--glow-primary) / 0.3),
+                0 0 60px hsl(var(--glow-primary) / 0.1);
+  }
+
+  .glow-accent {
+    box-shadow: 0 0 20px hsl(var(--glow-accent) / 0.3),
+                0 0 60px hsl(var(--glow-accent) / 0.1);
+  }
+
+  .glass-surface {
+    background: hsl(var(--surface-glass) / 0.6);
+    backdrop-filter: blur(20px);
+    border: 1px solid hsl(var(--border) / 0.5);
+  }
+
+  .text-gradient-primary {
+    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+}
+
+@keyframes cardFadeIn {
+  from { opacity: 0; transform: translateY(6px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes cardZoomIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes cardFocusIn {
+  from { opacity: 0; transform: scale(0.82) translateY(12px); }
+  to   { opacity: 1; transform: scale(1)    translateY(0); }
+}
+
+@keyframes cardFlyOut {
+  to {
+    opacity: 0;
+    transform: translateX(var(--fly-x, 0px)) translateY(var(--fly-y, -20px)) scale(0.85);
+  }
+}
+
+@keyframes modalIn {
+  from { opacity: 0; transform: translate(-50%, -50%) scale(0.93); }
+  to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+@keyframes backdropIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
