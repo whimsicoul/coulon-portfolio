@@ -1,87 +1,117 @@
-# coulon-portfolio
+# Thomas Coulon — Portfolio
 
-A personal developer portfolio built with React and Three.js, featuring an interactive 3D space scene for showcasing projects.
+A personal portfolio where I get to show off things I've been building and experimenting with. The site itself is one of those experiments — instead of a traditional page, projects float in a 3D space scene and expand into interactive architecture graphs when you click them.
 
-## Overview
+**Live site:** [coulon-portfolio.up.railway.app](https://coulon-portfolio.up.railway.app/)
 
-The portfolio presents projects as explorable 3D cards floating in a space environment. Selecting a card expands the project into an interactive node graph — each node represents a layer of the architecture, and clicking a node opens a detail overlay with descriptions, tech stack, and screenshots.
+---
 
-**Flow:**
-1. **Hero** — Landing view with name, bio, and a "View Projects" button
+## What's in here
+
+The portfolio presents two projects I'm proud of: a **Chess Opening Analyzer** and a **DC SAT Tutor platform**. Each one is represented as a floating 3D card in a space environment. Click a card and it expands into a node graph — each node is a layer of the architecture, and clicking any node shows a detail overlay with descriptions, tech stack info, and screenshots.
+
+**Three-state flow:**
+1. **Hero** — Landing view with a "View Projects" button
 2. **Selection** — 3D space scene (ISS, astronaut, asteroids) with floating project cards
-3. **Exploded view** — Selected project expands into an interactive node graph; clicking any node opens a detail overlay
+3. **Exploded view** — Selected project unfolds into an interactive node graph
+
+---
 
 ## Tech Stack
 
-| Layer | Tools |
+| Category | Technologies |
 |---|---|
 | Framework | React 18, TypeScript, Vite |
-| 3D Rendering | Three.js, React Three Fiber, Drei |
+| 3D Rendering | Three.js r170, React Three Fiber, Drei |
 | Animations | Framer Motion, GSAP |
-| Styling | Tailwind CSS, Radix UI (dialog, tooltip, toast) |
+| Styling | Tailwind CSS, shadcn/ui (Radix UI primitives) |
 | Routing | React Router v6 |
+| State & Data | React Query, React Context |
+| Build & Serving | Vite (SWC), serve |
+| Deployment | Railway, Nixpacks |
 
-## Getting Started
+---
+
+## Local Setup
 
 ```bash
 # Install dependencies
 npm install
 
-# Start dev server
+# Start dev server (http://localhost:8080)
 npm run dev
 
 # Build for production
 npm run build
+
+# Preview production build locally
+npm run preview
 ```
+
+---
 
 ## Project Structure
 
 ```
-src/
-  components/
-    Portfolio/     # Core portfolio components
-      SpaceScene.tsx       # ISS, astronaut, asteroid 3D models
-      Scene3D.tsx          # Node graph canvas
-      ProjectCard3D.tsx    # Floating project card in space
-      ChessCard3D.tsx      # Chess project card with 3D king model
-      HeroSection.tsx      # Landing hero
-      FloatingInfoCard.tsx # Node detail overlay (desktop)
-      FocusedCardOverlay.tsx # Node detail overlay (mobile/focused)
-      FloatingNode.tsx     # Individual node in the graph
-      SpaceBackground.tsx  # Starfield background
-      BackButton.tsx       # Navigation back button
-      ProjectTitle.tsx     # Project title display
-    ui/            # Radix UI primitives (button, dialog, tooltip, toast, sonner)
-  data/
-    projectData.ts # Project definitions and 3D node positions
-  hooks/
-    use-toast.ts   # Toast state management
-  pages/
-    Index.tsx      # Main page — manages app state (hero/selection/exploded)
-    NotFound.tsx   # 404 page
+coulon-portfolio/
+├── src/
+│   ├── components/
+│   │   ├── Portfolio/           # Core 3D portfolio components
+│   │   │   ├── Scene3D.tsx      # Main Three.js canvas + node graph
+│   │   │   ├── SpaceScene.tsx   # ISS, astronaut, asteroid models
+│   │   │   ├── SpaceBackground.tsx
+│   │   │   ├── ProjectCard3D.tsx
+│   │   │   ├── ChessCard3D.tsx  # Chess project card (3D king model)
+│   │   │   ├── TutoringCard3D.tsx
+│   │   │   ├── FloatingNode.tsx
+│   │   │   ├── FloatingInfoCard.tsx   # Node detail overlay (desktop)
+│   │   │   ├── FocusedCardOverlay.tsx # Node detail overlay (mobile)
+│   │   │   ├── HeroSection.tsx
+│   │   │   ├── BackButton.tsx
+│   │   │   └── ProjectTitle.tsx
+│   │   └── ui/                  # shadcn/ui primitives
+│   ├── data/
+│   │   └── projectData.ts       # Project definitions + node schemas
+│   ├── hooks/
+│   │   └── use-toast.ts
+│   ├── lib/
+│   │   └── utils.ts
+│   └── pages/
+│       ├── Index.tsx            # App state manager (hero/selection/exploded)
+│       └── NotFound.tsx
+├── public/
+│   ├── models/                  # 3D GLB models (ISS, astronaut, asteroids, tree)
+│   ├── assets3d/                # king.glb (Chess project card model)
+│   ├── chess-screenshots/       # 10 Chess app screenshots
+│   ├── sat-screenshots/         # 13 SAT tutor screenshots
+│   └── fonts/                   # Cinzel font (TTF + JSON)
+├── railway.json                 # Railway deployment config
+├── nixpacks.toml                # Nixpacks Node.js 20 build config
+├── serve.json                   # Cache headers + security policies
+└── vite.config.ts
 ```
 
-## Adding a Project
+---
 
-Projects are defined in `src/data/projectData.ts`. Each project has a title, subtitle, description, and an array of `ComponentNode` objects. Each node has a label, description, tech stack, 3D position, color, and category (`core`, `frontend`, `backend`, `database`, or `feature`).
+## 3D Assets
 
-```ts
-{
-  id: 'my-project',
-  title: 'My Project',
-  subtitle: 'Short tagline',
-  description: 'Longer description shown in the exploded view.',
-  components: [
-    {
-      id: 'my-project-core',
-      label: 'Core',
-      description: 'Central application layer.',
-      techStack: ['React', 'TypeScript'],
-      position: [0, 0, 0],
-      color: '#38bdf8',
-      category: 'core',
-    },
-    // ...more nodes
-  ],
-}
-```
+| File | Location | Size | Purpose |
+|---|---|---|---|
+| `king.glb` | `public/assets3d/` | ~1.5 MB | Chess project card |
+| `ISS.glb` | `public/models/` | 661 KB | Space scene |
+| `astronaut.glb` | `public/models/` | 767 KB | Space scene |
+| `asteroids.glb` | `public/models/` | 4.3 MB | Space scene |
+| `low-_poly_cherry_blossom_tree_3d_models.glb` | `public/models/` | 72 KB | Space scene accent |
+
+---
+
+## Deployment
+
+Hosted on **Railway** via Nixpacks. The build pipeline:
+
+1. Nixpacks installs Node.js 20 and runs `npm ci --include=dev`
+2. `npm run build` outputs to `dist/`
+3. Post-build copies `serve.json` into `dist/` for cache + security headers
+4. Production start: `serve dist --single --listen tcp://0.0.0.0:$PORT`
+
+No environment variables are required to run the site locally.
