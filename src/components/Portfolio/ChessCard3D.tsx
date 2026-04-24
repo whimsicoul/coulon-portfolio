@@ -207,7 +207,7 @@ const ChessCard3D = ({
   const goldMat = useMemo(() => makeBrushedGoldMaterial(), []);
 
   // Load the high-poly GLB king model
-  const { scene: kingScene } = useGLTF('/models/king-v2.glb');
+  const { scene: kingScene } = useGLTF('/assets3d/king.glb');
 
   // Clone the cached scene — marble material is baked into the GLB
   const kingModel = useMemo(() => {
@@ -376,4 +376,4 @@ const ChessCard3D = ({
 
 export default ChessCard3D;
 
-useGLTF.preload('/models/king-v2.glb');
+useGLTF.preload('/assets3d/king.glb');
