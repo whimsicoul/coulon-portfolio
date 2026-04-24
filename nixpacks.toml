@@ -1,14 +1,11 @@
 [phases.setup]
 nixPkgs = ["nodejs_20"]
-# Move the cache directory out of the app folder to prevent EBUSY
-nixpacksCacheDirs = ["/root/.npm"]
 
 [phases.install]
-cmds = ["npm ci"]
+cmds = ["npm ci --include=dev"]
 
 [phases.build]
-# Optional: Ensure the problematic directory is gone before building
-cmds = ["rm -rf node_modules/.cache", "npm run build"]
+cmds = ["npm run build"]
 
 [start]
 cmd = "npm start"
