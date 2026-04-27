@@ -12,9 +12,9 @@ const HeroSection = ({ onViewProjects }: HeroSectionProps) => {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.8 }}
-      className="absolute inset-0 z-10 flex items-center justify-center px-8"
+      className="absolute inset-0 z-10 flex items-center justify-center px-4 sm:px-8"
     >
-      <div className="flex flex-col-reverse md:flex-row items-center gap-12 max-w-5xl w-full">
+      <div className="flex flex-col-reverse md:flex-row items-center gap-6 md:gap-12 max-w-5xl w-full">
         {/* Left side */}
         <motion.div
           initial={{ opacity: 0, x: -40 }}
@@ -22,7 +22,7 @@ const HeroSection = ({ onViewProjects }: HeroSectionProps) => {
           transition={{ delay: 0.3, duration: 0.8 }}
           className="flex-1 text-center md:text-left"
         >
-          <h1 className="text-5xl md:text-7xl font-bold font-display tracking-tight text-foreground mb-4">
+          <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold font-display tracking-tight text-foreground mb-4">
             Thomas Coulon
           </h1>
           <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-lg">
@@ -52,7 +52,7 @@ const HeroSection = ({ onViewProjects }: HeroSectionProps) => {
               alt="Professional headshot"
               width={280}
               height={350}
-              className="relative w-52 h-52 md:w-72 md:h-72 rounded-full object-cover border-2 border-border"
+              className="relative w-44 h-44 sm:w-52 sm:h-52 md:w-72 md:h-72 rounded-full object-cover border-2 border-border"
             />
           </div>
         </motion.div>

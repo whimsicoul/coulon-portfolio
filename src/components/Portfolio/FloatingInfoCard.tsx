@@ -12,6 +12,7 @@ interface FloatingInfoCardProps {
   zIndex?: number;
   isFocused?: boolean;
   position?: [number, number, number];
+  isMobile?: boolean;
 }
 
 const categoryLabels: Record<string, string> = {
@@ -22,7 +23,7 @@ const categoryLabels: Record<string, string> = {
   feature: 'Feature',
 };
 
-const FloatingInfoCard = ({ node, index, animKey, onClick, zIndex = 1, isFocused = false, position }: FloatingInfoCardProps) => {
+const FloatingInfoCard = ({ node, index, animKey, onClick, zIndex = 1, isFocused = false, position, isMobile = false }: FloatingInfoCardProps) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const driftActive = useRef(false);
   const driftPhase = useRef(0);
@@ -82,14 +83,15 @@ const FloatingInfoCard = ({ node, index, animKey, onClick, zIndex = 1, isFocused
           ref={cardRef}
           onClick={(e) => { e.stopPropagation(); onClick(); }}
           style={{
-            width: '480px',
+            width: isMobile ? 'calc(100vw - 32px)' : '480px',
+            maxWidth: '480px',
             background: 'hsla(230, 15%, 7%, 0.95)',
             backdropFilter: 'blur(18px)',
             WebkitBackdropFilter: 'blur(18px)',
             border: isFocused ? `1px solid ${node.color}99` : `1px solid ${node.color}44`,
             borderTop: isFocused ? `2px solid ${node.color}ff` : `2px solid ${node.color}bb`,
             borderRadius: '10px',
-            padding: '16px 18px',
+            padding: isMobile ? '10px 12px' : '16px 18px',
             fontFamily: "'Space Grotesk', sans-serif",
             cursor: 'pointer',
             boxShadow: isFocused
@@ -190,7 +192,7 @@ const FloatingInfoCard = ({ node, index, animKey, onClick, zIndex = 1, isFocused
                 alt={`${node.label} screenshot`}
                 style={{
                   width: '100%',
-                  maxHeight: '140px',
+                  maxHeight: isMobile ? '90px' : '140px',
                   objectFit: 'cover',
                   borderRadius: '5px',
                   border: `1px solid ${node.color}33`,

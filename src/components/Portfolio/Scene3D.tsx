@@ -10,6 +10,7 @@ import SpaceBackground from './SpaceBackground';
 import { ISSCorner, AnimatedAstronaut, AsteroidPack, ASTRONAUT_START } from './SpaceScene';
 import { projects } from '@/data/projectData';
 import type { ComponentNode, Project } from '@/data/projectData';
+import { checkIsMobile } from '@/hooks/use-mobile';
 
 type AppState = 'hero' | 'selection' | 'transitioning' | 'exploded';
 
@@ -22,9 +23,10 @@ interface CameraControllerProps {
   appState: AppState;
   selectedProject: number | null;
   scrollZoom: number;
+  isMobile: boolean;
 }
 
-function CameraController({ appState, selectedProject, scrollZoom }: CameraControllerProps) {
+function CameraController({ appState, selectedProject, scrollZoom, isMobile }: CameraControllerProps) {
   const { camera } = useThree();
   const targetPos = useRef(new THREE.Vector3(-1.3, 1.5, 12));
   const targetLook = useRef(new THREE.Vector3(-1.3, 1.0, 0));
@@ -32,13 +34,13 @@ function CameraController({ appState, selectedProject, scrollZoom }: CameraContr
 
   useEffect(() => {
     if (appState === 'hero') {
-      targetPos.current.set(-1.3, 1.5, 12 + scrollZoom);
+      targetPos.current.set(-1.3, 1.5, (isMobile ? 16 : 12) + scrollZoom);
       targetLook.current.set(-1.3, 1.0, 0);
     } else if (appState === 'selection') {
-      targetPos.current.set(0, 0, 8 + scrollZoom);
+      targetPos.current.set(0, 0, (isMobile ? 12 : 8) + scrollZoom);
       targetLook.current.set(0, 0, 0);
     }
-  }, [appState, selectedProject, scrollZoom]);
+  }, [appState, selectedProject, scrollZoom, isMobile]);
 
   useFrame(() => {
     camera.position.lerp(targetPos.current, 0.06);
@@ -162,6 +164,7 @@ function SceneContent({
   scrollZoom,
   spacingScale,
 }: SceneContentProps) {
+  const mobile = checkIsMobile();
   const selectionOrbitRef = useRef<OrbitControlsImpl>(null);
   const orbitRef = useRef<OrbitControlsImpl>(null);
   const [readyStage, setReadyStage] = useState(0);
@@ -261,6 +264,7 @@ function SceneContent({
           appState={appState}
           selectedProject={selectedProject}
           scrollZoom={scrollZoom}
+          isMobile={mobile}
         />
       )}
 
@@ -278,7 +282,7 @@ function SceneContent({
             maxDistance={18}
             makeDefault
           />
-          <EntrySetup orbitRef={selectionOrbitRef} cameraPos={[0, 0, 8]} target={[0, 0, 0]} />
+          <EntrySetup orbitRef={selectionOrbitRef} cameraPos={[0, 0, mobile ? 12 : 8]} target={[0, 0, 0]} />
         </>
       )}
 
@@ -296,7 +300,7 @@ function SceneContent({
             maxDistance={30}
             makeDefault
           />
-          <EntrySetup orbitRef={orbitRef} cameraPos={[0, 0.0, 20]} target={[0, 0.0, 0]} />
+          <EntrySetup orbitRef={orbitRef} cameraPos={[0, 0, mobile ? 26 : 20]} target={[0, 0, 0]} />
           <FocusController
             orbitRef={orbitRef}
             zoomedComponentId={zoomedComponentId}
@@ -365,6 +369,7 @@ function SceneContent({
                 onClick={() => onZoomComponent(comp)}
                 zIndex={zIndex}
                 isFocused={isFocused}
+                isMobile={mobile}
               />
             );
           })}
@@ -397,10 +402,11 @@ const Scene3D = ({
   scrollZoom,
   spacingScale,
 }: Scene3DProps) => {
+  const mobile = checkIsMobile();
   return (
     <div className="absolute inset-0" style={{ zIndex: 0 }}>
       <Canvas
-        camera={{ position: [0, 0, 12], fov: 60 }}
+        camera={{ position: [0, 0, mobile ? 16 : 12], fov: mobile ? 75 : 60 }}
         gl={{ antialias: true, alpha: true }}
         style={{ background: 'transparent' }}
       >
