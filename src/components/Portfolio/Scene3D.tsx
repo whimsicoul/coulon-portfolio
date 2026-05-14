@@ -319,7 +319,7 @@ function SceneContent({
         <AsteroidPack />
       </Suspense>}
       {readyStage >= 2 && <Suspense fallback={null}>
-        <AnimatedAstronaut position={ASTRONAUT_START} scale={0.9} bobOffset={2.5} bobSpeed={0.15} drift={true} driftSpeed={0.8} />
+        <AnimatedAstronaut position={ASTRONAUT_START} scale={0.9} bobOffset={2.5} bobSpeed={0.15} drift={true} driftSpeed={0.8} appState={appState} />
       </Suspense>}
       {readyStage >= 3 && <Suspense fallback={null}>
         <ISSCorner />

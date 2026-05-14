@@ -1,6 +1,6 @@
-import { useRef, useMemo, useEffect } from 'react';
+import { useRef, useMemo, useEffect, useState } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
-import { useGLTF, useAnimations } from '@react-three/drei';
+import { useGLTF, useAnimations, Html } from '@react-three/drei';
 import * as THREE from 'three';
 import { SkeletonUtils } from 'three-stdlib';
 
@@ -120,9 +120,10 @@ interface AnimatedAstronautProps {
   bobSpeed?: number;
   drift?: boolean;
   driftSpeed?: number;
+  appState?: 'hero' | 'selection' | 'transitioning' | 'exploded';
 }
 
-export function AnimatedAstronaut({ position, scale = 0.9, bobOffset = 2.5, bobSpeed = 0.15, drift = false, driftSpeed = 0.8 }: AnimatedAstronautProps) {
+export function AnimatedAstronaut({ position, scale = 0.9, bobOffset = 2.5, bobSpeed = 0.15, drift = false, driftSpeed = 0.8, appState = 'hero' }: AnimatedAstronautProps) {
   const { scene, animations } = useGLTF('/models/astronaut.glb');
   const cloned = useMemo(() => SkeletonUtils.clone(scene), [scene]);
   const groupRef = useRef<THREE.Group>(null);
@@ -132,10 +133,52 @@ export function AnimatedAstronaut({ position, scale = 0.9, bobOffset = 2.5, bobS
   const arrivedAt = useRef<number | null>(null);
   const currentTarget = useRef<[number, number]>([...ASTRONAUT_TARGET]);
   const tumble = useRef({ x: 0, y: 0, z: 0 });
+  const isSettledRef = useRef(false);
+  const [isSettled, setIsSettled] = useState(false);
+  const [showBubble, setShowBubble] = useState(false);
+  const bubbleDismissed = useRef(false);
 
   useEffect(() => {
     actions['Animation']?.reset().play();
   }, [actions]);
+
+  useEffect(() => {
+    const id = 'astronaut-bubble-keyframes';
+    if (document.getElementById(id)) return;
+    const style = document.createElement('style');
+    style.id = id;
+    style.textContent = `
+      @keyframes bubbleFadeIn {
+        from { opacity: 0; transform: translate(-50%, -110%) scale(0.9); }
+        to   { opacity: 1; transform: translate(-50%, -100%) scale(1); }
+      }
+    `;
+    document.head.appendChild(style);
+  }, []);
+
+  useEffect(() => {
+    if (!isSettled || appState !== 'selection' || bubbleDismissed.current) return;
+    const t = setTimeout(() => {
+      if (!bubbleDismissed.current) setShowBubble(true);
+    }, 400);
+    return () => clearTimeout(t);
+  }, [isSettled, appState]);
+
+  useEffect(() => {
+    if (!showBubble) return;
+    const t = setTimeout(() => {
+      setShowBubble(false);
+      bubbleDismissed.current = true;
+    }, 5000);
+    return () => clearTimeout(t);
+  }, [showBubble]);
+
+  useEffect(() => {
+    if (appState !== 'selection' && showBubble) {
+      setShowBubble(false);
+      bubbleDismissed.current = true;
+    }
+  }, [appState, showBubble]);
 
   useFrame((state, delta) => {
     if (!groupRef.current) return;
@@ -167,6 +210,10 @@ export function AnimatedAstronaut({ position, scale = 0.9, bobOffset = 2.5, bobS
         const dist = Math.sqrt(dx * dx + dy * dy);
         if (dist < 0.5) {
           arrivedAt.current = t;
+          if (!isSettledRef.current) {
+            isSettledRef.current = true;
+            setIsSettled(true);
+          }
         } else {
           const speed = driftSpeed * delta;
           driftX.current += (dx / dist) * speed;
@@ -185,6 +232,41 @@ export function AnimatedAstronaut({ position, scale = 0.9, bobOffset = 2.5, bobS
   return (
     <group ref={groupRef} position={position} scale={scale} raycast={() => null}>
       <primitive object={cloned} />
+      {showBubble && (
+        <Html position={[1.2, 2.8, 0]} style={{ pointerEvents: 'none', zIndex: 10 }}>
+          <div style={{
+            position: 'relative',
+            maxWidth: '220px',
+            background: 'hsla(230, 20%, 8%, 0.92)',
+            backdropFilter: 'blur(12px)',
+            WebkitBackdropFilter: 'blur(12px)',
+            border: '1px solid rgba(148, 200, 255, 0.25)',
+            borderRadius: '14px',
+            padding: '10px 14px',
+            fontFamily: "'Space Grotesk', sans-serif",
+            fontSize: '12px',
+            lineHeight: 1.5,
+            color: 'hsl(210, 25%, 92%)',
+            boxShadow: '0 0 24px rgba(100, 180, 255, 0.15), 0 4px 20px rgba(0, 0, 0, 0.7)',
+            transform: 'translate(-50%, -100%)',
+            whiteSpace: 'normal',
+            textAlign: 'center',
+            animation: 'bubbleFadeIn 0.4s ease forwards',
+          }}>
+            Hey, click on the cherry blossom or chess king to see a breakdown of my projects.
+            <div style={{
+              position: 'absolute',
+              bottom: '-10px',
+              left: '22px',
+              width: 0,
+              height: 0,
+              borderLeft: '10px solid transparent',
+              borderRight: '6px solid transparent',
+              borderTop: '10px solid hsla(230, 20%, 8%, 0.92)',
+            }} />
+          </div>
+        </Html>
+      )}
     </group>
   );
 }
