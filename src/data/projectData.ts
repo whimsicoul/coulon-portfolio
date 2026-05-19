@@ -38,7 +38,7 @@ export const projects: Project[] = [
         position: [-4.2, 2.5, 1.0],
         color: '#38bdf8',
         category: 'frontend',
-        screenshots: ['/chess-screenshots/white-repertoire.png', '/chess-screenshots/home.png'],
+        screenshots: ['/chess-screenshots/white-repertoire.webp', '/chess-screenshots/home.webp'],
         implementationNote: 'useEngine queues positions during worker init, stops analysis before switching FENs, and accumulates PV lines per depth level — so the UI never shows stale evaluations.',
       },
       {
@@ -50,7 +50,7 @@ export const projects: Project[] = [
         position: [-4.2, -2.5, 0.5],
         color: '#f472b6',
         category: 'backend',
-        screenshots: ['/chess-screenshots/games.png', '/chess-screenshots/login.png'],
+        screenshots: ['/chess-screenshots/games.webp', '/chess-screenshots/login.webp'],
         implementationNote: 'db.py uses psycopg2 SimpleConnectionPool (min 1, max 5) with RealDictCursor and auto-rollback on context exit — Neon-aware (strips -pooler from the connection string for persistent connections).',
       },
       {
@@ -62,7 +62,7 @@ export const projects: Project[] = [
         position: [0.0, -3.8, -0.5],
         color: '#34d399',
         category: 'feature',
-        screenshots: ['/chess-screenshots/opening-visualization-ss.png', '/chess-screenshots/tutorial.png'],
+        screenshots: ['/chess-screenshots/opening-visualization-ss.webp', '/chess-screenshots/tutorial.webp'],
       },
       {
         id: 'chess-decisions',
@@ -73,7 +73,7 @@ export const projects: Project[] = [
         position: [4.2, -2.5, -0.5],
         color: '#a78bfa',
         category: 'core',
-        screenshots: ['/chess-screenshots/black-repertoire.png', '/chess-screenshots/white-repertoire.png'],
+        screenshots: ['/chess-screenshots/black-repertoire.webp', '/chess-screenshots/white-repertoire.webp'],
         implementationNote: 'The full-rebuild approach trades write performance for correctness — acceptable for opening trees (max ~50 lines) where consistency matters more than throughput.',
       },
       {
@@ -85,7 +85,7 @@ export const projects: Project[] = [
         position: [4.2, 2.5, 0.0],
         color: '#facc15',
         category: 'backend',
-        screenshots: ['/chess-screenshots/home.png'],
+        screenshots: ['/chess-screenshots/home.webp'],
         implementationNote: 'FastAPI\'s lifespan context manager runs _migrate() before the first request, creating all 8 tables if they don\'t exist — safe to run on every deploy.',
       },
     ],
@@ -106,7 +106,7 @@ export const projects: Project[] = [
         position: [-4.2, 2.5, 1.0],
         color: '#38bdf8',
         category: 'frontend',
-        screenshots: ['/sat-screenshots/landing.png', '/sat-screenshots/student-schedule.png'],
+        screenshots: ['/sat-screenshots/landing.webp', '/sat-screenshots/student-schedule.webp'],
       },
       {
         id: 'sat-auth',
@@ -117,7 +117,7 @@ export const projects: Project[] = [
         position: [-4.2, -2.5, 0.5],
         color: '#a78bfa',
         category: 'core',
-        screenshots: ['/sat-screenshots/login.png'],
+        screenshots: ['/sat-screenshots/login.webp'],
       },
       {
         id: 'sat-admin',
@@ -128,7 +128,7 @@ export const projects: Project[] = [
         position: [0.0, 3.5, 0.0],
         color: '#34d399',
         category: 'feature',
-        screenshots: ['/sat-screenshots/admin-dashboard.png', '/sat-screenshots/admin-users.png', '/sat-screenshots/admin-test-results.png'],
+        screenshots: ['/sat-screenshots/admin-dashboard.webp', '/sat-screenshots/admin-users.webp', '/sat-screenshots/admin-test-results.webp'],
       },
       {
         id: 'sat-student',
@@ -139,7 +139,7 @@ export const projects: Project[] = [
         position: [-1.5, -3.5, 0.0],
         color: '#38bdf8',
         category: 'frontend',
-        screenshots: ['/sat-screenshots/student-problem-sets.png', '/sat-screenshots/student-test-results.png'],
+        screenshots: ['/sat-screenshots/student-problem-sets.webp', '/sat-screenshots/student-test-results.webp'],
       },
       {
         id: 'sat-tutor',
@@ -150,7 +150,7 @@ export const projects: Project[] = [
         position: [1.5, -3.5, 0.0],
         color: '#38bdf8',
         category: 'frontend',
-        screenshots: ['/sat-screenshots/tutor-problem-sets.png', '/sat-screenshots/tutor-schedule.png'],
+        screenshots: ['/sat-screenshots/tutor-problem-sets.webp', '/sat-screenshots/tutor-schedule.webp'],
       },
       {
         id: 'sat-scheduling',
@@ -161,7 +161,7 @@ export const projects: Project[] = [
         position: [4.2, 0.5, 0.5],
         color: '#f472b6',
         category: 'backend',
-        screenshots: ['/sat-screenshots/admin-schedule.png', '/sat-screenshots/admin-assignments.png'],
+        screenshots: ['/sat-screenshots/admin-schedule.webp', '/sat-screenshots/admin-assignments.webp'],
       },
       {
         id: 'sat-db',
@@ -172,7 +172,7 @@ export const projects: Project[] = [
         position: [4.2, -2.5, 0.0],
         color: '#facc15',
         category: 'database',
-        screenshots: ['/sat-screenshots/admin-problem-sets.png'],
+        screenshots: ['/sat-screenshots/admin-problem-sets.webp'],
       },
     ],
   },

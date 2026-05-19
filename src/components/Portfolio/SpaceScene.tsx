@@ -263,9 +263,7 @@ export function Asteroid({ modelPath, position, entranceFrom, entranceSpeed = 1.
 }
 
 // ─── AsteroidPack ──────────────────────────────────────────────────────────
-// Loads the asteroid pack GLB once and renders 20 asteroids total:
-//   • 10 animated (entrance + drift) from ASTEROID_CONFIGS
-//   • 10 static deep-background from BACKGROUND_ASTEROID_CONFIGS (reuse same meshes)
+// Loads the asteroid pack GLB once and renders the 2 largest asteroids.
 
 interface PackedAsteroidConfig {
   name: string;
@@ -277,34 +275,9 @@ interface PackedAsteroidConfig {
   entranceDelay: number;
 }
 
-// Avoided directions:
-//   top-right (+x, +y)  → ISS enters from there
-//   left-mid  (-x, ~0y) → astronaut drifts in from that side
-// 20 total: first 10 at z -35 to -65 (foreground band), next 10 at z -75 to -100 (deep background).
-// Delays staggered one per second across 0–19s so at most one entrance animation runs at a time.
 const ASTEROID_CONFIGS: PackedAsteroidConfig[] = [
-  // ── foreground band ──
-  { name: 'Asteroid_no_1',  position: [-18,  7,  -55], targetSize: 4,   tumbleSpeed: [0.06, 0.10, 0.04], velocity: [-0.4,  0.15, 0],   entranceFrom: [-65, -30, -55], entranceDelay: 0  },
-  { name: 'Asteroid_no_2',  position: [ 20, -6,  -45], targetSize: 2.5, tumbleSpeed: [0.10, 0.07, 0.13], velocity: [ 0.3, -0.10, 0],   entranceFrom: [ 65, -25, -45], entranceDelay: 2  },
-  { name: 'Asteroid_no_3',  position: [-22, -9,  -40], targetSize: 1.8, tumbleSpeed: [0.13, 0.18, 0.07], velocity: [-0.2, -0.18, 0],   entranceFrom: [-10, -55, -40], entranceDelay: 4  },
-  { name: 'Asteroid_no_4',  position: [ 14, 10,  -50], targetSize: 1.5, tumbleSpeed: [0.16, 0.11, 0.08], velocity: [ 0.25, 0.12, 0],   entranceFrom: [ 50, -45, -50], entranceDelay: 3  },
-  { name: 'Asteroid_no_5',  position: [-10, 14,  -48], targetSize: 3,   tumbleSpeed: [0.07, 0.05, 0.10], velocity: [-0.15, 0.20, 0],   entranceFrom: [-55, -40, -48], entranceDelay: 6  },
-  { name: 'Asteroid_no_6',  position: [ 24,  5,  -60], targetSize: 3.5, tumbleSpeed: [0.04, 0.10, 0.06], velocity: [ 0.35,-0.08, 0],   entranceFrom: [ 20, -60, -60], entranceDelay: 8  },
-  { name: 'Asteroid_no_7',  position: [ -6, -14, -38], targetSize: 1.2, tumbleSpeed: [0.18, 0.14, 0.22], velocity: [-0.30,-0.22, 0],   entranceFrom: [ 55, -50, -38], entranceDelay: 5  },
-  { name: 'Asteroid_no_8',  position: [-24,  3,  -65], targetSize: 4.5, tumbleSpeed: [0.03, 0.06, 0.02], velocity: [-0.10, 0.07, 0],   entranceFrom: [ 35, -55, -65], entranceDelay: 10 },
-  { name: 'Asteroid_no_9',  position: [ 11, -10, -42], targetSize: 1.3, tumbleSpeed: [0.14, 0.08, 0.17], velocity: [ 0.20,-0.15, 0],   entranceFrom: [-50, -48, -42], entranceDelay: 7  },
-  { name: 'Asteroid_no_10', position: [-13,  8,  -35], targetSize: 1.1, tumbleSpeed: [0.20, 0.12, 0.09], velocity: [-0.18, 0.25, 0],   entranceFrom: [ 60,  12, -35], entranceDelay: 9  },
-  // ── deep background band (z -75 to -100) — smaller, slower tumble, gently drift ──
-  { name: 'Asteroid_no_1',  position: [-30,  18, -85], targetSize: 2.0, tumbleSpeed: [0.05, 0.08, 0.03], velocity: [-0.05, 0.03, 0],   entranceFrom: [-80, -60, -85], entranceDelay: 11 },
-  { name: 'Asteroid_no_2',  position: [ 32, -18, -92], targetSize: 1.4, tumbleSpeed: [0.09, 0.06, 0.11], velocity: [ 0.04,-0.02, 0],   entranceFrom: [ 80, -60, -92], entranceDelay: 12 },
-  { name: 'Asteroid_no_3',  position: [-16, -22, -78], targetSize: 2.5, tumbleSpeed: [0.11, 0.15, 0.06], velocity: [-0.03,-0.04, 0],   entranceFrom: [-15, -80, -78], entranceDelay: 13 },
-  { name: 'Asteroid_no_4',  position: [ -4,  25, -95], targetSize: 1.0, tumbleSpeed: [0.14, 0.09, 0.07], velocity: [ 0.02, 0.05, 0],   entranceFrom: [-75,  60, -95], entranceDelay: 14 },
-  { name: 'Asteroid_no_5',  position: [ 26, -28, -88], targetSize: 1.8, tumbleSpeed: [0.06, 0.04, 0.09], velocity: [ 0.06,-0.03, 0],   entranceFrom: [ 75, -65, -88], entranceDelay: 15 },
-  { name: 'Asteroid_no_6',  position: [-38, -12,-100], targetSize: 2.2, tumbleSpeed: [0.03, 0.07, 0.05], velocity: [-0.04, 0.02, 0],   entranceFrom: [-80, -70,-100], entranceDelay: 16 },
-  { name: 'Asteroid_no_7',  position: [ 18,  20, -75], targetSize: 0.9, tumbleSpeed: [0.16, 0.12, 0.18], velocity: [ 0.03, 0.04, 0],   entranceFrom: [ 70,  65, -75], entranceDelay: 17 },
-  { name: 'Asteroid_no_8',  position: [-26, -30, -90], targetSize: 1.6, tumbleSpeed: [0.02, 0.05, 0.02], velocity: [-0.02,-0.03, 0],   entranceFrom: [ 40, -75, -90], entranceDelay: 18 },
-  { name: 'Asteroid_no_9',  position: [ -8,  30, -82], targetSize: 1.1, tumbleSpeed: [0.12, 0.07, 0.14], velocity: [-0.03, 0.05, 0],   entranceFrom: [-70,  70, -82], entranceDelay: 19 },
-  { name: 'Asteroid_no_10', position: [ 36,  10, -97], targetSize: 0.8, tumbleSpeed: [0.17, 0.10, 0.08], velocity: [ 0.05, 0.02, 0],   entranceFrom: [ 80,  55, -97], entranceDelay: 20 },
+  { name: 'Asteroid_no_1', position: [-18,  7, -55], targetSize: 4,   tumbleSpeed: [0.06, 0.10, 0.04], velocity: [-0.4,  0.15, 0], entranceFrom: [-65, -30, -55], entranceDelay: 0  },
+  { name: 'Asteroid_no_8', position: [-24,  3, -65], targetSize: 4.5, tumbleSpeed: [0.03, 0.06, 0.02], velocity: [-0.10, 0.07, 0], entranceFrom: [ 35, -55, -65], entranceDelay: 10 },
 ];
 
 interface SinglePackAsteroidProps {
