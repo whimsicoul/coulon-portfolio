@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState, useMemo, Suspense } from 'react';
+import React, { useRef, useEffect, useState, useMemo, Suspense } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Environment, OrbitControls } from '@react-three/drei';
 import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
@@ -229,31 +229,36 @@ function SceneContent({
     });
   }, [project]);
 
-  // Per-frame z-index map: card id → CSS z-index based on camera distance
-  const [cardZIndexes, setCardZIndexes] = useState<Record<string, number>>({});
-  const prevOrderRef = useRef<string>('');
+  // Per-frame z-index: write directly to Html container divs — no React state
+  const htmlRefs = useRef<Record<string, React.RefObject<HTMLDivElement>>>({});
+  const prevCamPos = useRef(new THREE.Vector3());
+  const tmpVec = useRef(new THREE.Vector3());
   const { camera } = useThree();
 
   useFrame(() => {
     if (!showExploded || !project) return;
+    if (camera.position.distanceTo(prevCamPos.current) < 0.01) return;
+    prevCamPos.current.copy(camera.position);
+
+    const tmp = tmpVec.current;
     const distances = project.components.map((comp) => ({
       id: comp.id,
-      dist: camera.position.distanceTo(new THREE.Vector3(
-        comp.position[0] * spacingScale,
-        comp.position[1] * spacingScale,
-        comp.position[2] * spacingScale,
-      )),
+      dist: camera.position.distanceTo(
+        tmp.set(
+          comp.position[0] * spacingScale,
+          comp.position[1] * spacingScale,
+          comp.position[2] * spacingScale,
+        ),
+      ),
     }));
-    const sorted = [...distances].sort((a, b) => a.dist - b.dist);
-    const orderKey = sorted.map((d) => d.id).join(',');
-    if (orderKey === prevOrderRef.current) return;
-    prevOrderRef.current = orderKey;
-    const total = sorted.length;
-    const next: Record<string, number> = {};
-    sorted.forEach((item, rank) => {
-      next[item.id] = total - rank;
+    distances.sort((a, b) => a.dist - b.dist);
+    const total = distances.length;
+    distances.forEach((item, rank) => {
+      if (item.id === zoomedComponentId) return;
+      const el = htmlRefs.current[item.id]?.current;
+      if (!el) return;
+      el.style.zIndex = String(total - rank);
     });
-    setCardZIndexes(next);
   });
 
   return (
@@ -356,8 +361,9 @@ function SceneContent({
         <>
           {sortedComponents.map((comp, i) => {
             const isFocused = comp.id === zoomedComponentId;
-            const depthZIndex = cardZIndexes[comp.id] ?? 1;
-            const zIndex = isFocused ? 1000 : depthZIndex;
+            if (!htmlRefs.current[comp.id]) {
+              htmlRefs.current[comp.id] = React.createRef<HTMLDivElement>();
+            }
             const scaledPos = scalePosition(comp.position, spacingScale);
             return (
               <FloatingInfoCard
@@ -367,7 +373,8 @@ function SceneContent({
                 index={i}
                 animKey={animKey}
                 onClick={() => onZoomComponent(comp)}
-                zIndex={zIndex}
+                zIndex={isFocused ? 1000 : 1}
+                htmlRef={htmlRefs.current[comp.id]}
                 isFocused={isFocused}
                 isMobile={mobile}
               />

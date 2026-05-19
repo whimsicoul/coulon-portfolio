@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { Html } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import gsap from 'gsap';
@@ -10,6 +10,7 @@ interface FloatingInfoCardProps {
   animKey: number;
   onClick: () => void;
   zIndex?: number;
+  htmlRef?: React.RefObject<HTMLDivElement>;
   isFocused?: boolean;
   position?: [number, number, number];
   isMobile?: boolean;
@@ -23,7 +24,7 @@ const categoryLabels: Record<string, string> = {
   feature: 'Feature',
 };
 
-const FloatingInfoCard = ({ node, index, animKey, onClick, zIndex = 1, isFocused = false, position, isMobile = false }: FloatingInfoCardProps) => {
+const FloatingInfoCard = ({ node, index, animKey, onClick, zIndex = 1, htmlRef, isFocused = false, position, isMobile = false }: FloatingInfoCardProps) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const driftActive = useRef(false);
   const driftPhase = useRef(0);
@@ -78,7 +79,7 @@ const FloatingInfoCard = ({ node, index, animKey, onClick, zIndex = 1, isFocused
 
   return (
     <group position={position ?? node.position}>
-      <Html center={false} occlude={false} style={{ zIndex, pointerEvents: 'none' }}>
+      <Html ref={htmlRef} center={false} occlude={false} style={{ zIndex, pointerEvents: 'none' }}>
         <div
           ref={cardRef}
           onClick={(e) => { e.stopPropagation(); onClick(); }}
