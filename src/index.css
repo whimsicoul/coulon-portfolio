@@ -99,31 +99,9 @@
   }
 }
 
-@keyframes cardFadeIn {
-  from { opacity: 0; transform: translateY(6px) scale(0.97); }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-@keyframes cardZoomIn {
-  from { opacity: 0; transform: scale(0.9); }
-  to   { opacity: 1; transform: scale(1); }
-}
-
 @keyframes cardFocusIn {
   from { opacity: 0; transform: scale(0.82) translateY(12px); }
   to   { opacity: 1; transform: scale(1)    translateY(0); }
-}
-
-@keyframes cardFlyOut {
-  to {
-    opacity: 0;
-    transform: translateX(var(--fly-x, 0px)) translateY(var(--fly-y, -20px)) scale(0.85);
-  }
-}
-
-@keyframes modalIn {
-  from { opacity: 0; transform: translate(-50%, -50%) scale(0.93); }
-  to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
 }
 
 @keyframes backdropIn {
