@@ -1,23 +1,17 @@
-import { useRef, useMemo, useEffect } from 'react';
+import { useMemo, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
 // ─── StarField ─────────────────────────────────────────────────────────────────
 // Two layers of stars:
-//   Layer A — 400 faint background stars with very slow positional drift
+//   Layer A — 400 faint static background stars
 //   Layer B — 150 brighter mid-layer stars split into 3 groups for independent twinkle
 
 function StarField() {
   // ── Layer A ──────────────────────────────────────────────────────────────────
   const layerA = useMemo(() => {
     const count = 400;
-    const basePos = new Float32Array(count * 3);
-    const livePos = new Float32Array(count * 3);
-    const driftFreqX = new Float32Array(count);
-    const driftFreqY = new Float32Array(count);
-    const driftAmpX  = new Float32Array(count);
-    const driftAmpY  = new Float32Array(count);
-    const phase      = new Float32Array(count);
+    const pos = new Float32Array(count * 3);
 
     for (let i = 0; i < count; i++) {
       // Reject-sample to keep center region sparser
@@ -27,25 +21,13 @@ function StarField() {
         y = (Math.random() - 0.5) * 35;
       } while (Math.sqrt(x * x + y * y) / 20 < 0.25);
 
-      const z = (Math.random() - 0.5) * 14;
-      basePos[i * 3]     = x;
-      basePos[i * 3 + 1] = y;
-      basePos[i * 3 + 2] = z;
-      livePos[i * 3]     = x;
-      livePos[i * 3 + 1] = y;
-      livePos[i * 3 + 2] = z;
-
-      driftFreqX[i] = 0.02 + Math.random() * 0.06;
-      driftFreqY[i] = 0.02 + Math.random() * 0.06;
-      driftAmpX[i]  = 0.003 + Math.random() * 0.005;
-      driftAmpY[i]  = 0.003 + Math.random() * 0.005;
-      phase[i]      = Math.random() * Math.PI * 2;
+      pos[i * 3]     = x;
+      pos[i * 3 + 1] = y;
+      pos[i * 3 + 2] = (Math.random() - 0.5) * 14;
     }
 
     const geo = new THREE.BufferGeometry();
-    const attr = new THREE.BufferAttribute(livePos, 3);
-    attr.setUsage(THREE.DynamicDrawUsage);
-    geo.setAttribute('position', attr);
+    geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
 
     const mat = new THREE.PointsMaterial({
       size: 0.025,
@@ -56,7 +38,7 @@ function StarField() {
       depthWrite: false,
     });
 
-    return { geo, attr, mat, basePos, driftFreqX, driftFreqY, driftAmpX, driftAmpY, phase, count };
+    return { geo, mat };
   }, []);
 
   // ── Layer B — 3 groups of 50 for independent twinkling ───────────────────────
@@ -109,21 +91,9 @@ function StarField() {
     };
   }, [layerA, layerB]);
 
-  // Animation: Layer A drift + Layer B twinkle
+  // Animation: Layer B twinkle only (Layer A is static)
   useFrame(({ clock }) => {
     const t = clock.elapsedTime;
-
-    // Layer A: positional drift
-    const { basePos, attr, driftFreqX, driftFreqY, driftAmpX, driftAmpY, phase, count } = layerA;
-    const liveBuf = attr.array as Float32Array;
-    for (let i = 0; i < count; i++) {
-      liveBuf[i * 3]     = basePos[i * 3]     + driftAmpX[i] * Math.sin(t * driftFreqX[i] + phase[i]);
-      liveBuf[i * 3 + 1] = basePos[i * 3 + 1] + driftAmpY[i] * Math.sin(t * driftFreqY[i] + phase[i] + 1.3);
-      // z does not drift
-    }
-    attr.needsUpdate = true;
-
-    // Layer B: opacity twinkle
     layerB.forEach(g => {
       g.mat.opacity = g.baseOpacity + g.amp * Math.sin(t * g.speed + g.phaseOffset);
     });
